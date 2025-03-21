@@ -24,9 +24,8 @@ client = ollama.Client()
 
 def query_ollama(model: str, prompt: str) -> str:
 
-    model = "admissions_model"
-    prompt = "What are the requirements for admission to the program?"
-
+    model = model
+    prompt = prompt
     response = client.generate(model=model, prompt=prompt)
 
     return response
