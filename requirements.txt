@@ -1,0 +1,5 @@
+fastapi
+uvicorn
+langchain
+ollama
+faiss-cpu  # or chromadb if you prefer
