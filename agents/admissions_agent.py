@@ -1,13 +1,20 @@
 from typing import Optional
 from .base_agent import BaseAgent
 from llm.ollama_client import query_ollama
+from external.wikipedia_api import search_wikipedia
 
 class AdmissionsAgent(BaseAgent):
     def generate_response(self, query: str, context: Optional[str] = None) -> str:
-        # Prepend conversation history if available
+        wiki_text = search_wikipedia(query)
+        base = f"Provide detailed information about Concordia University's Computer Science admissions for:\n{query}"
+        extras = []
+
         if context:
-            prompt = f"{context}\nProvide detailed information about Concordia University's Computer Science admissions for:\n{query}"
-        else:
-            prompt = f"Provide detailed information about Concordia University's Computer Science admissions for:\n{query}"
+            print("context:" + context) # Debugging
+            extras.append(context)
+        if wiki_text:
+            print("wiki text:" + wiki_text) # Debugging
+            extras.append(f"You can refer to this info:\n{wiki_text}")
+        prompt = "\n".join([base] + extras)
 
         return query_ollama("admissions_model", prompt)
