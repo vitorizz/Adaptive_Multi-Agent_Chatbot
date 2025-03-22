@@ -2,4 +2,6 @@ fastapi
 uvicorn
 langchain
 ollama
-faiss-cpu  # or chromadb if you prefer
+faiss-cpu 
+sentence-transformers
+wikipedia-api
