@@ -1,7 +1,9 @@
 fastapi
 uvicorn
 langchain
+langchain-community
 ollama
 faiss-cpu 
 sentence-transformers
 wikipedia-api
+langchain-huggingface
