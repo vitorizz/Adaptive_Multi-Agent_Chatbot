@@ -12,6 +12,8 @@ Table of Contents
 
 -   Installation
 
+-   Ollama Setup
+
 -   Running the Application
 
 -   Usage
@@ -118,6 +120,33 @@ Installation
     -   `sentence-transformers`
 
     -   `wikipedia-api`
+  
+Ollama Setup
+-----------------------
+This project uses Ollama to provide LLM-based responses. Follow these steps to set up Ollama:
+
+1. **Download and Install Ollama:**  
+   Download Ollama from [Ollama's official website](https://ollama.com) and follow the installation instructions for your operating system.
+
+2. **Start the Ollama Service:**  
+   In your terminal, run:
+   ```bash
+   ollama serve
+   ```
+This will start the Ollama service on your local machine.
+From a terminal window in /Adaptive_Multi-Agent_Chatbot, create the required models using the following commands:
+
+-   **General Model:**
+
+    `ollama create general_model -f ./Modelfiles/General_model.txt`
+
+-   **Admissions Model:**
+
+    `ollama create admissions_model -f ./Modelfiles/Admissions_model.txt`
+
+-   **AI Model:**
+
+    `ollama create ai_model -f ./Modelfiles/AI_model.txt`
 
 Running the Application
 -----------------------
@@ -175,5 +204,7 @@ Usage
 Authors
 -------
 Vito Rizzuto 40246408
+
 Miro
+
 Kate
