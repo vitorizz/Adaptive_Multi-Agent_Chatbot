@@ -5,8 +5,6 @@ from memory.vector_memory import VectorMemory
 import requests
 
 memory = VectorMemory()
-last_user_query = ""
-last_bot_response = ""
 
 def classify_intent(query: str) -> str:
     prompt = f"""You are an intent classification model. Determine the user's intent based on their query.
@@ -62,7 +60,6 @@ Respond with only one word: admissions, ai, or general.
 #         return "standard_query"
 
 def route_query(query: str) -> str:
-    global last_user_query, last_bot_response
     lower = query.strip().lower()
     context = "" if lower in ["hello", "hi", "hey"] else memory.get_context(query)
 
@@ -85,10 +82,33 @@ def route_query(query: str) -> str:
     else:
         agent = GeneralAgent()
 
-    response = agent.generate_response(query, context)
-    memory.add_interaction(query, response)
+    full_response = agent.generate_response(query, context)
 
-    last_user_query = query
-    last_bot_response = response
+    # Try to extract just the response text
+    try:
+        # Convert to dict if it's an object with attributes
+        if not isinstance(full_response, dict) and hasattr(full_response, "__dict__"):
+            response_dict = vars(full_response)
+        else:
+            response_dict = full_response
+            
+        # Navigate through the response structure
+        if isinstance(response_dict, dict) and "response" in response_dict:
+            inner = response_dict["response"]
+            if isinstance(inner, dict) and "response" in inner:
+                response_text = inner["response"]
+            elif hasattr(inner, "response"):
+                response_text = inner.response
+            else:
+                response_text = str(inner)
+        else:
+            response_text = str(full_response)
+            
+    except Exception as e:
+        print(f"Error extracting response: {e}")
+        response_text = str(full_response)
 
-    return response
+    # print("This is what we adding in memory:" + str(response_text))
+    memory.add_interaction(query, response_text)
+
+    return response_text
