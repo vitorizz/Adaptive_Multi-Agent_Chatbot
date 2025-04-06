@@ -133,6 +133,9 @@ This project uses Ollama to provide LLM-based responses. Follow these steps to s
    ```bash
    ollama serve
    ```
+   &
+   ollama pull mistral
+   
 This will start the Ollama service on your local machine.
 From a terminal window in /Adaptive_Multi-Agent_Chatbot, create the required models using the following commands:
 
@@ -179,7 +182,9 @@ This endpoint routes the query to the appropriate agent (based on keywords) and 
 
 { "query": "your query here", "response": "agent's response here" }
 ```
-
+Run GUI
+--------------
+python gui/chat_desktop_gui.py (need to be in the repo & previous steps completed)
 
 Usage
 -----
@@ -205,6 +210,6 @@ Authors
 -------
 Vito Rizzuto 40246408
 
-Miro
+Miroslav Miskovski 40249269
 
 Kateryna Sizova 40212437
