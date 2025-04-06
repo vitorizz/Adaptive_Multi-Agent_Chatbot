@@ -35,44 +35,46 @@ Respond with only one word: admissions, ai, or general.
         print(f"[IntentClassifier] Error calling Ollama: {e}")
         return "general"
 
-def classify_followup_intent(query: str) -> str:
-    prompt = f"""You are a conversational intent classifier. Given a user message, classify it into one of the following intents:
+# def classify_followup_intent(query: str) -> str:
+#     prompt = f"""You are a conversational intent classifier. Given a user message, classify it into one of the following intents:
 
-Options: [correction, memory_check, standard_query]
+# Options: [correction, memory_check, standard_query]
 
-User message: "{query}"
+# User message: "{query}"
 
-Intent:"""
+# Intent:"""
 
-    try:
-        response = requests.post("http://127.0.0.1:11434/api/generate", json={
-            "model": "mistral",
-            "prompt": prompt,
-            "stream": False
-        })
+#     try:
+#         response = requests.post("http://127.0.0.1:11434/api/generate", json={
+#             "model": "mistral",
+#             "prompt": prompt,
+#             "stream": False
+#         })
 
-        data = response.json()
-        if "response" in data:
-            return data["response"].strip().lower()
-        else:
-            print(f"[FollowupClassifier] Unexpected response format: {data}")
-            return "standard_query"
-    except Exception as e:
-        print(f"[FollowupClassifier] Error calling Ollama: {e}")
-        return "standard_query"
+#         data = response.json()
+#         if "response" in data:
+#             return data["response"].strip().lower()
+#         else:
+#             print(f"[FollowupClassifier] Unexpected response format: {data}")
+#             return "standard_query"
+#     except Exception as e:
+#         print(f"[FollowupClassifier] Error calling Ollama: {e}")
+#         return "standard_query"
 
 def route_query(query: str) -> str:
     global last_user_query, last_bot_response
     lower = query.strip().lower()
     context = "" if lower in ["hello", "hi", "hey"] else memory.get_context(query)
 
-    followup_intent = classify_followup_intent(query)
+    # This part does not really work well and messes up the chatbot 
 
-    if followup_intent == "memory_check":
-        return f"You last mentioned: \"{last_user_query}\""
+    # followup_intent = classify_followup_intent(query)
 
-    if followup_intent == "correction":
-        return "Oops! Sorry about that. Could you clarify what you meant or correct me?"
+    # if followup_intent == "memory_check":
+    #     return f"You last mentioned: \"{last_user_query}\""
+
+    # if followup_intent == "correction":
+    #     return "Oops! Sorry about that. Could you clarify what you meant or correct me?"
 
     intent = classify_intent(query)
 

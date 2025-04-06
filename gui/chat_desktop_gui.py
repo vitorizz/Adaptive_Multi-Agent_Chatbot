@@ -2,6 +2,7 @@ import requests
 import tkinter as tk
 from tkinter import scrolledtext
 from tkinter import ttk
+import threading
 
 API_URL = "http://127.0.0.1:8000/query"
 
@@ -18,6 +19,9 @@ class ChatApp:
         self.active_button = "#357ABD"
         
         self.root.configure(bg=self.bg_color)
+        
+        # Loading state
+        self.is_loading = False
 
         # Style configuration for buttons
         style = ttk.Style()
@@ -57,15 +61,35 @@ class ChatApp:
         # Send button
         self.send_button = ttk.Button(self.input_frame, text="Send", command=self.send_message)
         self.send_button.pack(side=tk.RIGHT)
+        
+        # Loading indicator (hidden by default)
+        self.loading_label = tk.Label(self.input_frame, text="Loading...", 
+                                     font=self.default_font, bg=self.bg_color,
+                                     fg=self.primary_color)
+        self.loading_label.pack(side=tk.RIGHT, padx=10)
+        self.loading_label.pack_forget()  # Hide initially
 
     def send_message(self, event=None):
+        if self.is_loading:
+            return  # Prevent multiple submissions
+            
         query = self.user_input.get().strip()
         if not query:
             return
 
+        # Show the user's message in the chat
         self.append_text(f"You: {query}\n")
+        
+        # Clear input immediately
         self.user_input.delete(0, tk.END)
+        
+        # Start loading state
+        self.set_loading_state(True)
+        
+        # Start a new thread to handle the API request
+        threading.Thread(target=self.fetch_response, args=(query,), daemon=True).start()
 
+    def fetch_response(self, query):
         try:
             response = requests.get(API_URL, params={"query": query})
             json_data = response.json()
@@ -77,7 +101,26 @@ class ChatApp:
         except Exception as e:
             answer = f"Error: {str(e)}"
 
+        # Use after() to safely update the UI from this thread
+        self.root.after(0, lambda: self.handle_response(answer))
+
+    def handle_response(self, answer):
         self.append_text(f"Bot: {answer}\n")
+        # End loading state
+        self.set_loading_state(False)
+
+    def set_loading_state(self, is_loading):
+        self.is_loading = is_loading
+        if is_loading:
+            # Disable button and show loading indicator
+            self.send_button.config(state=tk.DISABLED)
+            self.loading_label.pack(side=tk.RIGHT, padx=10)
+        else:
+            # Enable button and hide loading indicator
+            self.send_button.config(state=tk.NORMAL)
+            self.loading_label.pack_forget()
+            # Set focus back to input
+            self.user_input.focus_set()
 
     def append_text(self, text):
         self.chat_display.configure(state='normal')
