@@ -11,35 +11,56 @@ class ChatApp:
         self.root.title("Adaptive Multi-Agent Chatbot")
         self.root.geometry("700x500")
         self.default_font = ("Segoe UI", 11)
-        self.root.configure(bg="#e6ecf0")
+        
+        # Define colors
+        self.bg_color = "#f5f5f5"
+        self.primary_color = "#4a90e2"
+        self.active_button = "#357ABD"
+        
+        self.root.configure(bg=self.bg_color)
 
+        # Style configuration for buttons
         style = ttk.Style()
         style.theme_use('clam')
         style.configure("TButton",
                         font=self.default_font,
                         padding=6,
-                        background="#0078D7",
+                        background=self.primary_color,
                         foreground="white")
-
-        self.header = tk.Label(self.root, text="Adaptive Multi-Agent Chatbot", font=("Segoe UI", 14, "bold"), bg="#0078D7", fg="white", pady=10)
+        style.map("TButton", background=[("active", self.active_button)])
+        
+        # Header
+        self.header = tk.Label(self.root, text="Adaptive Multi-Agent Chatbot",
+                               font=("Segoe UI", 16, "bold"), bg=self.primary_color,
+                               fg="white", pady=15)
         self.header.pack(fill=tk.X)
 
-        self.chat_display = scrolledtext.ScrolledText(root, wrap=tk.WORD, width=80, height=20, font=self.default_font, bg="white", fg="black", borderwidth=0)
-        self.chat_display.pack(padx=10, pady=(10, 0))
+        # Chat display area within a frame for extra padding
+        self.chat_frame = tk.Frame(self.root, bg=self.bg_color)
+        self.chat_frame.pack(padx=20, pady=15, fill=tk.BOTH, expand=True)
+        self.chat_display = scrolledtext.ScrolledText(self.chat_frame, wrap=tk.WORD,
+                                                      font=self.default_font, bg="white",
+                                                      fg="black", borderwidth=1, relief="solid")
+        self.chat_display.pack(fill=tk.BOTH, expand=True)
+        self.chat_display.configure(state='disabled')
 
-        self.input_frame = tk.Frame(root, bg="#e6ecf0")
-        self.input_frame.pack(padx=10, pady=(0, 10), fill=tk.X)
+        # Input area frame
+        self.input_frame = tk.Frame(self.root, bg=self.bg_color)
+        self.input_frame.pack(padx=20, pady=10, fill=tk.X)
 
-        self.user_input = tk.Entry(self.input_frame, width=60, font=self.default_font, relief=tk.FLAT)
-        self.user_input.pack(side=tk.LEFT, padx=(0, 10), pady=5, ipady=6, expand=True, fill=tk.X)
+        # User input entry with border style
+        self.user_input = tk.Entry(self.input_frame, font=self.default_font,
+                                   relief="solid", borderwidth=1)
+        self.user_input.pack(side=tk.LEFT, padx=(0, 10), pady=5, ipady=5, fill=tk.X, expand=True)
         self.user_input.bind("<Return>", self.send_message)
 
+        # Send button
         self.send_button = ttk.Button(self.input_frame, text="Send", command=self.send_message)
         self.send_button.pack(side=tk.RIGHT)
 
     def send_message(self, event=None):
         query = self.user_input.get().strip()
-        if query == "":
+        if not query:
             return
 
         self.append_text(f"You: {query}\n")
@@ -48,8 +69,7 @@ class ChatApp:
         try:
             response = requests.get(API_URL, params={"query": query})
             json_data = response.json()
-
-            # Handle case where response is a nested dict
+            # Handle nested response dictionaries
             if isinstance(json_data.get("response"), dict):
                 answer = json_data["response"].get("response", "No response from server.")
             else:
