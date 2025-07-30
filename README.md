@@ -3,23 +3,6 @@ Adaptive Multi-Agent Chatbot
 
 This project is for COMP 474 -- Intelligent Systems at Concordia University. It implements an adaptive multi-agent chatbot system that leverages Ollama for LLM-based responses, LangChain for memory and prompt engineering, and FAISS for vector memory storage. The chatbot dynamically routes queries to specialized agents---General, Admissions, and AI---while maintaining context across multi-turn conversations and integrating external knowledge (e.g., from Wikipedia).
 
-Table of Contents
------------------
-
--   Features
-
--   Project Structure
-
--   Installation
-
--   Ollama Setup
-
--   Running the Application
-
--   Usage
-
--   Authors
-
 Features
 --------
 
